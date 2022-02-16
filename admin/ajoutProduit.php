@@ -3,10 +3,24 @@ require_once '../inc/header.php';
 
 if(!empty($_POST)): // si le formulaire a été soumis
 
-    if(!empty($_FILES['picture']['name'])): // vérification avec 'name' pour être sûr qu'un fichier a bien été déposé
 
-        // debug($_FILES);
-        //     die; // permet d'arreter la lecture du code
+    // condition modification photo
+    if(!empty($_FILES['pictureEdit']['name'])):
+        $picture_name = date_format(new DateTime(), 'dmYHis') . uniqid() . $_FILES['pictureEdit']['name'];
+        $picture_bdd = 'upload/' . $picture_name;
+        copy($_FILES['pictureEdit']['tmp_name'], '../' . $picture_bdd);
+        unlink('../' . $_POST['picture']); // permet de supprimer l'ancienne photo si on l'a remplacé
+    endif;
+
+
+    // condition modification mais sans modification photo
+    if(empty($_FILES['pictureEdit']['name']) && empty($_FILES['picture']['name'])):
+        $picture_bdd = $_POST['picture'];
+    endif;
+
+
+    // condition insert nouvelle entrée, photo
+    if(!empty($_FILES['picture']['name'])): // vérification avec 'name' pour être sûr qu'un fichier a bien été déposé
 
         $picture_name = date_format(new DateTime(), 'dmYHis') . uniqid() . $_FILES['picture']['name'];
         // dmY = date month Year | His = Hour minute seconde | uniqid() permet de donner un nom unique à la photo
@@ -30,6 +44,14 @@ if(!empty($_POST)): // si le formulaire a été soumis
         ':picture' => $picture_bdd,
         ':description' => $_POST['description']
     ));
+    if(isset($_FILES['pictureEdit'])):
+        $_SESSION['messages']['success'][] = 'Votre produit a bien été modifié !';
+    else:
+        $_SESSION['messages']['success'][] = 'Votre produit a bien été ajouté !';
+    endif;
+
+    header('location:../index.php');  // permet de rediriger vers l'accueil apres avoir modifié un produit
+    exit();
 
 endif; // endif !empty($_POST)
 
@@ -62,7 +84,7 @@ endif;
         </div>
         <div class="form-group">
             <label for="exampleInputPassword1" class="form-label mt-4">Prix</label>
-            <input type="number" name="price" value="<?= $product['price'] ?? 0; ?>" class="form-control" id="exampleInputPassword1" placeholder="Entrez le prix du produit">
+            <input type="number" name="price" value="<?= $product['price'] ?? ""; ?>" class="form-control" id="exampleInputPassword1" placeholder="Entrez le prix du produit">
         </div>
 <!--        <div class="form-group">-->
 <!--            <label for="exampleSelect1" class="form-label mt-4">Example select</label>-->
@@ -85,7 +107,7 @@ endif;
             <label for="formFile" class="form-label mt-4">Photo</label>
             <input name="pictureEdit" class="form-control" type="file" id="formFile">
         </div>
-        <input type="hidden" value="<?= $product['picture'] ;?>">
+        <input type="hidden" name="picture" value="<?= $product['picture'] ;?>">
         <div>
             <img width="200" src="<?= '../' . $product['picture'] ;?>" alt="">
         </div>

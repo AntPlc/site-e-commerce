@@ -9,9 +9,26 @@ $products = $resultat -> fetchAll(PDO::FETCH_ASSOC);
 
 // debug($products);
 // die;
+if(isset($_GET['id'])):
+
+    executeRequete("DELETE FROM product WHERE id=:id", array(
+        ':id' => $_GET['id']
+    ));
+
+    $_SESSION['messages']['danger'][]='Votre produit a bien été supprimé !';
+    // besoin d'une entrée vide à la fin pour ne pas écraser l'entrée success et permettre de créer autant d'entrée vide que de message
+    // success change la couleur du message qui apparait
 
 
+header('location: ./');
+exit();
+endif;
+
+// $_SESSION['messages']['success'][]='Votre produit a bien été supprimé';
+// debug($_SESSION);
+// die();
 ?>
+
 
 <div class="row justify-content-between">
     <?php foreach($products as $product): ?>
@@ -25,12 +42,14 @@ $products = $resultat -> fetchAll(PDO::FETCH_ASSOC);
             <p class="card-text"><?= $product['description']; ?></p>
         </div>
         <a href="<?= SITE . 'admin/ajoutProduit.php?id=' . $product['id'] ; ?>" class="btn btn-secondary">Modifier</a>
-        <a href="" class="btn btn-danger">Supprimer</a>
+        <a href="?id=<?= $product['id']; ?>" onclick="return confirm('Etes vous sûr ?')" class="btn btn-danger">Supprimer</a>
     </div>
 
-    <?php endforeach;?>
+<?php endforeach;?>
 </div>
 
+<!-- pour charger des infos en GET on déclare avec ? le chargement de $_GET suivie de l'indice (le name a appeler en $_GET et on lui affecte sa valeur avec =saValeur. ex: ?prenom='Antoine'&nom='Plantec'; le debug de $_GET nous renvoie 'nom'=>'Plantec',-->
+<!-- 'prenom'=>'Antoine'. Pour y accéder on appelle $_GET['nom'] qui nous retourne 'Plantec' -->
 
 <?php require_once 'inc/footer.php';?>
 

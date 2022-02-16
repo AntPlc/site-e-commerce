@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<?php require_once'init.php'; ?>
+<?php require_once 'init.php'; ?>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-5">
   <div class="container-fluid">
@@ -47,7 +47,21 @@
         <input class="form-control me-sm-2" type="text" placeholder="Search">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
       </form>
+      <div class="text-center">
+        <a href="<?=  SITE.'security/login.php' ; ?>" class="btn btn-success">Se connecter</a>
+        <a href="<?=  SITE.'security/register.php' ; ?>" class="btn btn-primary">S'inscrire</a>
+      </div>
     </div>
   </div>
 </nav>
 <div class="container">
+<?php if (isset($_SESSION['messages']) && !empty($_SESSION['messages'])):
+foreach ($_SESSION['messages'] as $type => $mess):
+    foreach ($mess as $key=>$message):
+?>
+
+  <div class="alert alert-<?=  $type ; ?> text-center">
+      <p><?=  $message ; ?></p>
+  </div>
+<?php  unset($_SESSION['messages'][$type][$key]); ?>
+<?php  endforeach; endforeach; endif;?>
