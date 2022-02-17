@@ -23,11 +23,13 @@
         <li class="nav-item">
           <a class="nav-link" href="<?= SITE; ?>">Accueil</a>
         </li>
+        <?php  if(admin()): ?>
         <li class="nav-item">
           <a class="nav-link" href="<?= SITE.'admin/ajoutProduit.php' ; ?>">Ajout Produit</a>
         </li>
+        <?php endif; ?>
         <li class="nav-item">
-          <a class="nav-link" href="#">Pricing</a>
+          <a class="nav-link" href="#">Panier</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">About</a>
@@ -47,10 +49,16 @@
         <input class="form-control me-sm-2" type="text" placeholder="Search">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
       </form>
-      <div class="text-center">
-        <a href="<?=  SITE.'security/login.php' ; ?>" class="btn btn-success">Se connecter</a>
-        <a href="<?=  SITE.'security/register.php' ; ?>" class="btn btn-primary">S'inscrire</a>
-      </div>
+      <?php if(!connect()): ?>
+        <div class="text-center">
+          <a href="<?=  SITE.'security/login.php' ; ?>" class="btn btn-success">Se connecter</a>
+          <a href="<?=  SITE.'security/register.php' ; ?>" class="btn btn-primary">S'inscrire</a>
+        </div>
+      <?php else: ?> 
+        <div class="text-center">
+          <a href="<?=  SITE.'?unset=1' ; ?>" class="btn btn-primary">Se déconnecter</a>
+        </div>
+      <?php endif; ?>    
     </div>
   </div>
 </nav>

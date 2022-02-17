@@ -1,4 +1,51 @@
-<?php require_once '../inc/header.php';?>
+<?php require_once '../inc/header.php';
+
+if(connect()):
+    header('location:../');
+    exit();
+endif;
+
+if(!empty($_POST)):
+    $resultat = executeRequete("SELECT * FROM user WHERE email=:email", array(
+        ':email' => $_POST['email']
+    ));
+
+    if($resultat -> rowCount() == 1): // rowCount() compte le nbre de user qui à cette email
+        $user = $resultat->fetch(PDO::FETCH_ASSOC);
+
+        if(password_verify($_POST['password'], $user['password'])): // compare le mdp haché et celui en écrit brut
+            $_SESSION['user'] = $user;
+            $_SESSION['messages']['success'][] = "Bienvenue ". $user['nickname'];
+
+            header('location: ../');
+            exit();
+        
+        else:
+            $_SESSION['messages']['danger'][] = "Erreur dans le mot de passe.";
+
+            header('location: ./login.php');
+            exit();
+
+        endif;
+    
+    elseif($resultat -> rowCount() == 0):
+        $_SESSION['messages']['danger'][] = "Aucun compte n'est enregistré avec cet email.";
+
+        header('location: ./login.php');
+        exit();
+
+    elseif($resultat -> rowCount() > 1):
+        $_SESSION['messages']['danger'][] = "Une erreur est survenue, merci de contacter l'administrateur du site.";
+
+        header('location: ./login.php');
+        exit();
+
+    endif;
+
+endif;
+
+
+?>
 
 
 <form method="post" action="">
