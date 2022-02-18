@@ -18,27 +18,50 @@ $contenu = '';
 // => : pour les tableau, = associée à cette valeure du tableau /// -> : pour les objets, = accède à la propriété (directement nommée) ou à la méthode (entre parenthèse)
 
 
-function executeRequete($requete, $param = array()){
-// le parametre $requete reçois une requete SQL | le parametre $param reçoit un tableau array avec les marqueurs associés a leur valeur
-    // Echappement des données avec htmlspecialchars()
-    foreach($param as $marqueur => $valeur){
-        $param[$marqueur] = htmlspecialchars($valeur);
-        // on transforme les cheuvrons en entité html qui neutralise les balises <style> et <script> eventuellement injectés en formulaire. Evite les failles XSS et CSS
+function executeRequete($requete, $param = array())
+{
+    // le parametre $requete recoit une requete sql. Le parametre $param recoit un tableau avec les marqueurs associés à leur valeur
+
+    $order=false;
+
+    // Echappement des données avec htmlspecialchars() :
+    foreach ($param as $marqueur => $valeur) {
+
+        if ($marqueur==':amount'):
+
+          $order=true;
+        endif;
+            $param[$marqueur] = htmlspecialchars($valeur);
+        // on transforme les chevrons en entité html qui neutralise les balises <style> et <script> eventuellement injectées en formulaire. Evite les failles XSS et CSS
     }
 
     global $pdo; // permet d'acceder à la variable $pdo de manière globale
 
-    $resultat = $pdo -> prepare($requete); // on prepare la requete reçue
-    $succes = $resultat -> execute($param); // on execute en lui passant un tableau des marqueurs associés à la valeur
+    $resultat = $pdo->prepare($requete);// on prepare la requete reçu
 
-    // execute() renvoie toujours un booleen: true en cas de succes et false en cas d'echec
+          //die(var_dump($id));
+    $success = $resultat->execute($param);// on execute en lui passant le tableau des marqueurs associés à leur valeur
+    if ($order):
+        $id=$pdo->lastInsertId();
 
-    if($succes){ // si succes == true donc la requete a fonctionné
-        return $resultat;
+    endif;
+    // execute() renvoie toujours un boulean: true en cas de succes et false en cas d'echec
+
+    if ($success) { // si $success == true donc que la requete a fonctionné
+     if ($order):
+        return $id;
+     else:
+         return $resultat;
+     endif;
+
     } else {
+
         return false;
+
     }
+
 }
+
 
 function debug($var) {
     echo '<pre>';
@@ -67,6 +90,3 @@ if(!isset($_SESSION['cart'])):
 endif;
 
 require_once 'cart.php';
-
-
-?>

@@ -12,7 +12,7 @@ endif;
 if(isset($_GET['add'])):
     add($_GET['add']);
 
-    header('location:./');
+    header('location:./#' . $_GET['add']);
     exit();
 endif;
 
@@ -22,6 +22,8 @@ if(isset($_GET['remove'])):
     header('location:./');
     exit();
 endif;
+
+
 
 
 $resultat = executeRequete("SELECT * FROM product");
@@ -51,12 +53,14 @@ endif;
 ?>
 
 <div class="font-italic">
-    <h1 class="">Nouveaux articles :</h1>
+    <h2 class="">Nouveaux articles:</h2>
 </div>
 <hr>
 <div class="row justify-content-between">
+
     <?php foreach($products as $product): 
     $quant = 0;
+    
         foreach($_SESSION['cart'] as $id => $quantity):
             if($product['id'] == $id):
                 $quant = $quantity;
@@ -80,7 +84,7 @@ endif;
         <div>
             <div class="text-center mb-3">
                 <a href="?remove= <?= $product['id']; ?>" class="btn btn-primary">-</a>
-                <input class="text-center ps-3 pe-0" disabled style="width: 15%" type="number" value="<?= $quant; ?>">
+                <input class="text-center ps-3 pe-0" disabled style="..." type="number" value="<?= $quant; ?>">
                 <a href="?add= <?= $product['id']; ?>" class="btn btn-primary">+</a>
             </div>
         </div>
